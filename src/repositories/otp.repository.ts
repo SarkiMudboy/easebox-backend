@@ -1,7 +1,11 @@
-import type { Database } from "#db/index.js";
-import type { NewOtp, Otp, OtpType } from "#db/schema/users.js";
+import type { Database } from "#infrastructure/database/index.js";
+import type {
+  NewOtp,
+  Otp,
+  OtpType,
+} from "#infrastructure/database/schema/users.js";
 
-import { otps } from "#db/schema/users.js";
+import { otps } from "#infrastructure/database/schema/users.js";
 import { and, eq, gt, lt } from "drizzle-orm";
 
 export class OtpRepository {
@@ -45,4 +49,3 @@ export class OtpRepository {
     return otp;
   }
 }
-

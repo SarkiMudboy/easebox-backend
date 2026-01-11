@@ -1,0 +1,50 @@
+import type {
+  IndividualProfile,
+  OtpType,
+} from "#infrastructure/database/schema/users.js";
+
+export interface ApiResponse<T = unknown> {
+  data?: T;
+  errors?: Record<string, string[]>;
+  message: string;
+  success: boolean;
+}
+
+export interface AuthResponse {
+  profile: IndividualProfile;
+  tokens: AuthTokens;
+  user_id: string;
+}
+
+export interface AuthTokenPayload {
+  email: string;
+  userId: string;
+  userType: UserType;
+}
+
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface RegisterIndividualInput {
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  phone?: string;
+  termsAccepted: boolean;
+}
+
+export interface RequestVerificationInput {
+  type: OtpType;
+  userId: string;
+}
+
+export type UserType = "individual" | "logistics_company" | "rider";
+
+export interface VerifyOtpInput {
+  code: string;
+  type: OtpType;
+  userId: string;
+}

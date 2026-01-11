@@ -1,7 +1,7 @@
-import type { Database } from "#db/index.js";
-import type { NewUser, User } from "#db/schema/users.js";
+import type { Database } from "#infrastructure/database/index.js";
+import type { NewUser, User } from "#infrastructure/database/schema/users.js";
 
-import { users } from "#db/schema/users.js";
+import { users } from "#infrastructure/database/schema/users.js";
 import { eq } from "drizzle-orm";
 
 export class UserRepository {

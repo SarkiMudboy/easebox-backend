@@ -1,10 +1,10 @@
-import type { Database } from "#db/index.js";
+import type { Database } from "#infrastructure/database/index.js";
 import type {
   IndividualProfile,
   NewIndividualProfile,
-} from "#db/schema/users.js";
+} from "#infrastructure/database/schema/users.js";
 
-import { individualProfiles } from "#db/schema/users.js";
+import { individualProfiles } from "#infrastructure/database/schema/users.js";
 import { eq } from "drizzle-orm";
 
 export class IndividualProfileRepository {
