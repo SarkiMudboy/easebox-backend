@@ -57,11 +57,12 @@ router.post(
 );
 router.post("/verification/verify", verificationController.verifyAccount);
 
-router.all("/oauth/*", (req, res) => {
+router.all("/oauth/*splat", (req, res) => {
   return toNodeHandler(auth)(req, res);
 });
 
-router.post("/oauth/:provider/complete", oauthController.handleCallback);
+// Post-OAuth endpoint to get JWT tokens after Better Auth callback
+router.post("/oauth/:provider/token", oauthController.issueTokens);
 
 router.get("/oauth/providers", oauthController.getLinkedProviders);
 
