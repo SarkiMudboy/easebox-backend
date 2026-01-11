@@ -1,9 +1,12 @@
 import type { User } from "#db/schema/users.js";
+import type { IndividualProfileRepository } from "#repositories/individual-profile.repository.js";
 import type { UserRepository } from "#repositories/user.repository.js";
 import type { AuthResponse, RegisterIndividualInput } from "#types/index.js";
 
 import { generateTokens } from "#utils/jwt.js";
 import { hashPassword } from "#utils/password.js";
+
+import type { VerificationService } from "./verification.service.js";
 
 export class AuthError extends Error {
   constructor(
@@ -16,7 +19,11 @@ export class AuthError extends Error {
 }
 
 export class AuthService {
-  constructor(private userRepository: UserRepository) {}
+  constructor(
+    private userRepository: UserRepository,
+    private individualProfileRepository: IndividualProfileRepository,
+    private verificationService: VerificationService
+  ) {}
 
   async registerIndividual(
     input: RegisterIndividualInput
@@ -44,13 +51,26 @@ export class AuthService {
     // Create user
     const user = await this.userRepository.create({
       email: input.email.toLowerCase().trim(),
-      firstName: input.firstName.trim(),
-      lastName: input.lastName.trim(),
       password: hashedPassword,
-      phone: input.phone?.trim() ?? null,
       termsAccepted: true,
       userType: "individual",
     });
+
+    // Create individual profile
+    const profile = await this.individualProfileRepository.create({
+      firstName: input.firstName.trim(),
+      lastName: input.lastName.trim(),
+      phone: input.phone?.trim() ?? null,
+      userId: user.id,
+    });
+
+    // Send verification email (don't block registration on failure)
+    try {
+      await this.verificationService.sendEmailVerification(user.id);
+    } catch (error) {
+      console.error("Failed to send verification email:", error);
+      // Continue with registration even if email fails
+    }
 
     // Generate tokens
     const tokens = generateTokens({
@@ -60,8 +80,9 @@ export class AuthService {
     });
 
     return {
+      profile,
       tokens,
-      user: this.sanitizeUser(user),
+      user_id: user.id,
     };
   }
 
